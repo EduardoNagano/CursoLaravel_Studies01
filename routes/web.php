@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\OnlyAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,3 +65,60 @@ Route::get('/exp3/{value1}/{value2}', function ($value) {
     'value1' => '[0-9]+',
     'value2' => '[A-Za-z0-9]+'
 ]);
+
+// ---------------------------------------
+// ROUTE NAMES
+// ---------------------------------------
+Route::get('/rota_abc', function(){
+    return 'Rota nomeada';
+})->name('rota_nomeada');
+
+Route::get('/rota_referenciada', function(){
+    return redirect()->route('rota_nomeada');
+});
+
+// ---------------------------------------
+// ROUTE GROUP
+// ---------------------------------------
+Route::prefix('admin')->group(function(){
+    Route::get('/home', [MainController::class, 'index']); // '/admin/home'
+    Route::get('/about', [MainController::class, 'about']); // '/admin/about'
+    Route::get('/management', [MainController::class, 'mostrarValor']); // '/admin/management'
+});
+
+Route::get('/admin/only', function(){
+    echo 'Apenas administradores';
+})->middleware([OnlyAdmin::class]);
+
+// ---------------------------------------
+// ROUTE MIDDLEWARE
+// ---------------------------------------
+Route::middleware([OnlyAdmin::class])->group(function(){
+    Route::get('/admin/only2', function(){
+        return 'Apenas administradores 1';
+    });
+
+    Route::get('/admin/only3', function(){
+        return 'Apenas administradores 2';
+    });
+});
+
+// ---------------------------------------
+// ROUTE CONTROLLER
+// ---------------------------------------
+// Route::get('/user/new', [UserController::class. 'new']);
+// Route::get('/user/edit', [UserController::class. 'edit']);
+// Route::get('/user/delete', [UserController::class. 'delete']);
+
+Route::controller(UserController::class)->group(function(){
+    Route::get('/user/new', 'new');
+    Route::get('/user/edit', 'edit');
+    Route::get('/user/delete', 'delete');
+});
+
+// ---------------------------------------
+// ROUTE FALLBACK
+// ---------------------------------------
+Route::fallback(function(){
+    echo "Página Não Encontrada";
+});

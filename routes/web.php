@@ -86,13 +86,13 @@ Route::prefix('admin')->group(function(){
     Route::get('/management', [MainController::class, 'mostrarValor']); // '/admin/management'
 });
 
+// ---------------------------------------
+// ROUTE MIDDLEWARE
+// ---------------------------------------
 Route::get('/admin/only', function(){
     echo 'Apenas administradores';
 })->middleware([OnlyAdmin::class]);
 
-// ---------------------------------------
-// ROUTE MIDDLEWARE
-// ---------------------------------------
 Route::middleware([OnlyAdmin::class])->group(function(){
     Route::get('/admin/only2', function(){
         return 'Apenas administradores 1';
